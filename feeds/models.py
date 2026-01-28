@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Integer
+from sqlalchemy import Integer, String
 from datetime import datetime
 from database import BaseModel
 
@@ -7,16 +7,12 @@ from database import BaseModel
 class FeedItem(BaseModel):
     __tablename__ = "feed_items"
     
-    id: Mapped[int] = mapped_column(primary_key=True)
-    author_id: Mapped[int] = mapped_column()
-    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    user_id: Mapped[int] = mapped_column(Integer)
 
 
 class Reels(BaseModel):
     __tablename__ = "reels"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    author_id: Mapped[int] = mapped_column()
-    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
-    video_url: Mapped[str] = mapped_column()
-    caption: Mapped[str] = mapped_column()
+    author_id: Mapped[int] = mapped_column(Integer)
+    video_url: Mapped[str] = mapped_column(String)
+    caption: Mapped[str] = mapped_column(String)
     # max_size_video: Mapped[int] = mapped_column(Integer,default=59)
