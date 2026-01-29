@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from feeds import router as feed_router
+from feeds.views import feed_router
 import uvicorn
 
 app = FastAPI(title="Instagram App Backend", version="1.0.0")

@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from database import BaseModel, DATABASE_URL
 from feeds.models import *
 
+
 from alembic import context
 
 # this is the Alembic Config object, which provides
