@@ -1,13 +1,10 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, Form, UploadFile
 from datetime import datetime, timedelta
+from sqlalchemy.ext.asyncio import AsyncSession
 from feeds.models import FeedItem
-from feeds.schemas import FeedItemResponseSchema,ReelsSchema
-from feeds.services import FeedService
-from fastapi import UploadFile
-from database import AsyncSession
-from feeds.helpers import save_uploaded_video, get_video_duration
-from feeds.models import Reel
-from feeds.schemas import ReelResponseSchema
+from feeds.schemas import FeedItemResponseSchema, ReelResponseSchema
+from feeds.services import FeedService, create_reel
+from database import get_db
 
 feed_router = APIRouter(prefix="/feed", tags=["feed"])
 
@@ -39,22 +36,14 @@ def get_home_feed():
     "/reels/create",
     response_model=ReelResponseSchema
 )
-async def create_reel(
-    author_id: int,
-    file: UploadFile,
-    db: AsyncSession,
+async def create_reel_endpoint(
+    author_id: int = Form(...),
+    file: UploadFile = ...,
+    db: AsyncSession = Depends(get_db),
 ):
-    video_path = await save_uploaded_video(file)
-    duration = get_video_duration(video_path)
-
-    reel = Reel(
+    reel = await create_reel(
+        db=db,
         author_id=author_id,
-        video_path=video_path,
-        duration=duration,
+        file=file,
     )
-
-    db.add(reel)
-    await db.commit()
-    await db.refresh(reel)
-
     return reel
