@@ -2,20 +2,24 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.ext.asyncio import AsyncSession,async_sessionmaker, AsyncAttrs
 from sqlalchemy.orm import Mapped, mapped_column, declared_attr
-from sqlalchemy import Integer, func
-from datetime import datetime
+from sqlalchemy import Integer
+from datetime import datetime, timezone
 
 DATABASE_URL = "sqlite+aiosqlite:///database.db"
 
 engine = create_async_engine(DATABASE_URL)
 
 
+def utc_now():
+    return datetime.now(timezone.utc)
+
+
 class BaseModel(AsyncAttrs, DeclarativeBase):
     __abstract__ = True
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
+    created_at: Mapped[datetime] = mapped_column(default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(default=utc_now, onupdate=utc_now)
 
     @declared_attr.directive
     def __tablename__(cls) -> str:
