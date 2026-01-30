@@ -6,9 +6,9 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
-from server.models import BaseModel
-from accounts.models import UserAuth
-from server.settings import SQLALCHEMY_DATABASE_URL
+from database import BaseModel
+from accounts.models import UserAuth, UserProfile
+from database import DATABASE_URL
 
 # Alembic Config object
 config = context.config
@@ -18,7 +18,7 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # Metadata for autogenerate
-config.set_main_option("sqlalchemy.url", SQLALCHEMY_DATABASE_URL)
+config.set_main_option("sqlalchemy.url", DATABASE_URL)
 target_metadata = BaseModel.metadata
 
 
