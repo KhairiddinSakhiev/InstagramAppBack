@@ -19,3 +19,6 @@ class UserProfile(BaseModel):
     profile_photo: Mapped[str | None] = mapped_column(String(300))
 
     auth: Mapped[UserAuth] = relationship(back_populates="profile")
+    
+class BlackListToken(BaseModel):
+    token: Mapped[str] = mapped_column(Text, unique=True, nullable=False, index=True)
