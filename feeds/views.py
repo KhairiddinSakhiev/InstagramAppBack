@@ -2,9 +2,10 @@ from fastapi import APIRouter, Depends, Form, UploadFile
 from datetime import datetime, timedelta
 from sqlalchemy.ext.asyncio import AsyncSession
 from feeds.models import FeedItem
-from feeds.schemas import FeedItemResponseSchema, ReelResponseSchema
-from feeds.services import FeedService, create_reel
+from feeds.schemas import FeedItemResponseSchema, ReelResponseSchema, DeleteResponseSchema, ReelLikeResponseSchema
+from feeds.services import FeedService, create_reel, delete_reel, get_reel, reel_like_toggle
 from database import get_db
+
 
 feed_router = APIRouter(prefix="/feed", tags=["feed"])
 
@@ -47,3 +48,28 @@ async def create_reel_endpoint(
         file=file,
     )
     return reel
+
+
+@feed_router.delete("/reels/{reel_id}", response_model=DeleteResponseSchema)
+async def delete_reel_endpoint(
+    reel_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    await delete_reel(db=db, reel_id=reel_id)
+    return DeleteResponseSchema(message="Reel deleted successfully")
+
+
+@feed_router.get("/reels/{reel_id}", response_model=ReelResponseSchema)
+async def get_reel_endpoint(
+    reel_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    return await get_reel(db=db, reel_id=reel_id)
+
+@feed_router.post("/reels/{reel_id}/like", response_model=ReelLikeResponseSchema)
+async def reel_like_toggle_endpoint(
+    reel_id: int,
+    user_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    return await reel_like_toggle(db=db, reel_id=reel_id, user_id=user_id)

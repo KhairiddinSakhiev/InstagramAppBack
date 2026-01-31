@@ -18,7 +18,38 @@ class ReelResponseSchema(BaseModel):
     author_id: int
     video_path: str
     duration: float
-    created_at: datetime
+    views_count: int
+    likes_count: int
+    comments_count: int
+
+    class Config:
+        from_attributes = True
+
+class DeleteResponseSchema(BaseModel):
+    message: str
+
+class ReelLikeCreateSchema(BaseModel):
+    reel_id: int
+    user_id: int
+
+class ReelCommentCreateSchema(BaseModel):
+    reel_id: int
+    user_id: int
+    comment: str
+
+class ReelCommentResponseSchema(BaseModel):
+    id: int
+    reel_id: int
+    user_id: int
+    comment: str
+
+    class Config:
+        from_attributes = True
+
+class ReelLikeResponseSchema(BaseModel):
+    id: int
+    reel_id: int
+    user_id: int
 
     class Config:
         from_attributes = True
