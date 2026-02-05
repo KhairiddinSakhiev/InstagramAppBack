@@ -3,7 +3,6 @@ from datetime import datetime
 from typing import Optional, List
 
 
-
 class FollowCreate(BaseModel):
     following_id: int
 
@@ -31,15 +30,11 @@ class CommentResponse(BaseModel):
     parent_id: Optional[int]
     text: str
     created_at: datetime
-
     replies: List["CommentResponse"] = []
+    likes_count: int
 
     class Config:
         from_attributes = True
-
-
-class PostLikeCreate(BaseModel):
-    post_id: int
 
 
 class PostLikeResponse(BaseModel):
@@ -52,10 +47,6 @@ class PostLikeResponse(BaseModel):
         from_attributes = True
 
 
-class CommentLikeCreate(BaseModel):
-    comment_id: int
-
-
 class CommentLikeResponse(BaseModel):
     id: int
     user_id: int
@@ -66,4 +57,20 @@ class CommentLikeResponse(BaseModel):
         from_attributes = True
 
 
+class SavedPostCreate(BaseModel):
+    post_id: int
 
+
+class SavedPostResponse(BaseModel):
+    id: int
+    user_id: int
+    post_id: int
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class UserStatsResponse(BaseModel):
+    followers: int
+    following: int

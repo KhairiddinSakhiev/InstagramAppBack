@@ -9,6 +9,7 @@ from alembic import context
 from database import BaseModel
 from accounts.models import UserAuth, UserProfile
 from database import DATABASE_URL
+from social.models import *
 
 # Alembic Config object
 config = context.config

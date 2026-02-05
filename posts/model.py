@@ -5,9 +5,8 @@ from database import BaseModel
 
 
 class Post(BaseModel):
-    __tablename__ = "posts"
-
-    author_id: Mapped[int] = mapped_column(ForeignKey("UserAuth.id"))
+    
+    author_id: Mapped[int] = mapped_column(ForeignKey("userauths.id"))
     image: Mapped[Optional[str]] = mapped_column(nullable=True)  
     content: Mapped[str] = mapped_column()
     is_deleted: Mapped[bool] = mapped_column(default=False)
