@@ -1,8 +1,8 @@
-"""update tables
+"""create tables
 
-Revision ID: d5021832ac11
+Revision ID: 1bff6ee5103f
 Revises: 
-Create Date: 2026-01-30 16:29:37.688606
+Create Date: 2026-02-03 09:49:08.323716
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'd5021832ac11'
+revision: str = '1bff6ee5103f'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -29,10 +29,33 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_blacklisttokens_token'), 'blacklisttokens', ['token'], unique=True)
+    op.create_table('emailverificationcodes',
+    sa.Column('email', sa.String(length=100), nullable=False),
+    sa.Column('code', sa.String(length=6), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('expires_at', sa.DateTime(), nullable=False),
+    sa.Column('used', sa.Boolean(), nullable=False),
+    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_emailverificationcodes_email'), 'emailverificationcodes', ['email'], unique=False)
+    op.create_table('passwordresetcodes',
+    sa.Column('email', sa.String(length=100), nullable=False),
+    sa.Column('code', sa.String(length=6), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('expires_at', sa.DateTime(), nullable=False),
+    sa.Column('used', sa.Boolean(), nullable=False),
+    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_passwordresetcodes_email'), 'passwordresetcodes', ['email'], unique=False)
     op.create_table('userauths',
     sa.Column('email', sa.String(length=100), nullable=False),
     sa.Column('phone_number', sa.String(length=20), nullable=True),
     sa.Column('hashed_password', sa.String(length=200), nullable=False),
+    sa.Column('email_verified', sa.Boolean(), nullable=False),
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=False),
@@ -64,6 +87,10 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_userprofiles_username'), table_name='userprofiles')
     op.drop_table('userprofiles')
     op.drop_table('userauths')
+    op.drop_index(op.f('ix_passwordresetcodes_email'), table_name='passwordresetcodes')
+    op.drop_table('passwordresetcodes')
+    op.drop_index(op.f('ix_emailverificationcodes_email'), table_name='emailverificationcodes')
+    op.drop_table('emailverificationcodes')
     op.drop_index(op.f('ix_blacklisttokens_token'), table_name='blacklisttokens')
     op.drop_table('blacklisttokens')
     # ### end Alembic commands ###

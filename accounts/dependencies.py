@@ -2,6 +2,7 @@ from fastapi import HTTPException, status, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from accounts.security import SECRET_KEY, ALGORITHM
 import jwt
+from jwt import ExpiredSignatureError, InvalidTokenError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from database import get_db
@@ -9,17 +10,18 @@ from accounts.models import UserProfile, BlackListToken
 
 security = HTTPBearer()
 
-def decode_jwt(token: str):
+
+def decode_jwt(token: str) -> dict:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
-    except jwt.ExpiredSignatureError:
+    except ExpiredSignatureError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token expired",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    except jwt.InvalidTokenError:
+    except InvalidTokenError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token",
@@ -31,6 +33,7 @@ def decode_jwt(token: str):
             detail="Can't recognise token",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
 
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
